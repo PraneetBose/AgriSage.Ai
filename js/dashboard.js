@@ -1,4 +1,4 @@
-const GEMINI_API_KEY = "AIzaSyB-IG24MNJU8fVglcFwVd0YTDLTTIcK17s";
+const GEMINI_API_KEY = "Your Key";
 window.GEMINI_API_KEY = GEMINI_API_KEY;
 const OWM_API_KEY = "448a11a48f1047a581dade12eccf9a18";
 window.notifications = window.notifications || [];
