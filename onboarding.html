@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSage.ai - Onboarding</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: var(--background-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .onboarding-container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg, white);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #e0e0e0;
+            width: 100%;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            width: 25%;
+            transition: width 0.3s ease;
+        }
+
+        .card-content {
+            padding: 2.5rem;
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+            margin-bottom: 2rem;
+            font-family: var(--font-heading);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .option-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--card-bg, white);
+            color: var(--text-color);
+        }
+
+        .option-card:hover {
+            border-color: var(--primary-light);
+            background-color: var(--secondary-color);
+        }
+
+        .option-card.selected {
+            border-color: var(--primary-color);
+            background-color: var(--secondary-color);
+            box-shadow: 0 4px 6px rgba(46, 125, 50, 0.2);
+        }
+
+        /* Dark mode tweaks for options handled via variables later */
+
+        .option-card i {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+
+        .option-card h3 {
+            font-size: 1rem;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+
+        .next-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .next-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .next-btn:not(:disabled):hover {
+            background-color: var(--primary-dark);
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="onboarding-container">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+        <form id="onboarding-form">
+            <!-- Step 1: Crop -->
+            <div class="step active" id="step-1">
+                <div class="card-content">
+                    <h2 class="card-title">Which crop do you primarily produce?</h2>
+
+                    <div class="options-grid">
+                        <div class="option-card" onclick="selectOption(1, 'Wheat')">
+                            <i class="fas fa-wheat-awn"></i>
+                            <h3>Wheat</h3>
+                        </div>
+                        <div class="option-card" onclick="selectOption(1, 'Corn')">
+                            <i class="fas fa-leaf"></i>
+                            <h3>Corn</h3>
+                        </div>
+                        <div class="option-card" onclick="selectOption(1, 'Rice')">
+                            <i class="fas fa-bowl-rice"></i>
+                            <h3>Rice</h3>
+                        </div>
+                        <div class="option-card" onclick="selectOption(1, 'Soybeans')">
+                            <i class="fas fa-seedling"></i>
+                            <h3>Soybeans</h3>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="primary_crop" id="primary_crop">
+
+                    <div class="actions">
+                        <button type="button" class="next-btn btn-animated" id="btn-1" disabled
+                            onclick="nextStep(2)">Next <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Land Size -->
+            <div class="step" id="step-2">
+                <div class="card-content">
+                    <h2 class="card-title">What is your total land size?</h2>
+
+                    <div class="options-grid">
+                        <div class="option-card" onclick="selectOption(2, '< 50 Acres')">
+                            <i class="fas fa-ruler-combined"></i>
+                            <h3>&lt; 50 Acres</h3>
+                        </div>
+                        <div class="option-card" onclick="selectOption(2, '50 - 200 Acres')">
+                            <i class="fas fa-tractor"></i>
+                            <h3>50 - 200 Acres</h3>
+                        </div>
+                        <div class="option-card" onclick="selectOption(2, '200 - 1000 Acres')">
+                            <i class="fas fa-map"></i>
+                            <h3>200 - 1000 Acres</h3>
+                        </div>
+                        <div class="option-card" onclick="selectOption(2, '> 1000 Acres')">
+                            <i class="fas fa-globe-americas"></i>
+                            <h3>&gt; 1000 Acres</h3>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="land_size" id="land_size">
+
+                    <div class="actions" style="justify-content: space-between;">
+                        <button type="button" class="next-btn btn-animated" onclick="prevStep(1)"
+                            style="background: #ccc; color: #333;">Back</button>
+                        <button type="button" class="next-btn btn-animated" id="btn-2" disabled
+                            onclick="nextStep(3)">Next <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Difficulty -->
+            <div class="step" id="step-3">
+                <div class="card-content">
+                    <h2 class="card-title">What is your biggest farming challenge?</h2>
+
+                    <div class="options-grid">
+                        <div class="option-card" onclick="selectOption(3, 'Pest Control')">
+                            <i class="fas fa-bug"></i>
+                            <h3>Pest Control</h3>
+                        </div>
+                        <div class="option-card" onclick="selectOption(3, 'Water Management')">
+                            <i class="fas fa-water"></i>
+                            <h3>Water Mgmt</h3>
+                        </div>
+                        <div class="option-card" onclick="selectOption(3, 'Soil Health')">
+                            <i class="fas fa-mountain"></i>
+                            <h3>Soil Health</h3>
+                        </div>
+                        <div class="option-card" onclick="selectOption(3, 'Market Access')">
+                            <i class="fas fa-chart-line"></i>
+                            <h3>Market Access</h3>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="farming_difficulty" id="farming_difficulty">
+
+                    <div class="actions" style="justify-content: space-between;">
+                        <button type="button" class="next-btn btn-animated" onclick="prevStep(2)"
+                            style="background: #ccc; color: #333;">Back</button>
+                        <button type="button" class="next-btn btn-animated" id="btn-3" disabled
+                            onclick="nextStep(4)">Next
+                            <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+            <!-- Step 4: Current Stage -->
+            <div class="step" id="step-4">
+                <div class="card-content">
+                    <h2 class="card-title">What is your current crop stage?</h2>
+
+                    <div class="options-grid">
+                        <div class="option-card" onclick="selectOption(4, 'Sowing')">
+                            <i class="fas fa-seedling"></i>
+                            <h3>Sowing</h3>
+                        </div>
+                        <div class="option-card" onclick="selectOption(4, 'Vegetative')">
+                            <i class="fas fa-leaf"></i>
+                            <h3>Vegetative</h3>
+                        </div>
+                        <div class="option-card" onclick="selectOption(4, 'Flowering')">
+                            <i class="fas fa-spa"></i>
+                            <h3>Flowering</h3>
+                        </div>
+                        <div class="option-card" onclick="selectOption(4, 'Harvesting')">
+                            <i class="fas fa-tractor"></i>
+                            <h3>Harvesting</h3>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="current_stage" id="current_stage">
+
+                    <div class="actions" style="justify-content: space-between;">
+                        <button type="button" class="next-btn btn-animated" onclick="prevStep(3)"
+                            style="background: #ccc; color: #333;">Back</button>
+                        <button type="button" class="next-btn btn-animated" id="btn-4" disabled
+                            onclick="nextStep(5)">Next <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Soil Type -->
+            <div class="step" id="step-5">
+                <div class="card-content">
+                    <h2 class="card-title">What is your soil type?</h2>
+
+                    <div class="options-grid">
+                        <div class="option-card" onclick="selectOption(5, 'Alluvial')">
+                            <i class="fas fa-water"></i>
+                            <h3>Alluvial</h3>
+                        </div>
+                        <div class="option-card" onclick="selectOption(5, 'Black')">
+                            <i class="fas fa-circle" style="color: #333;"></i>
+                            <h3>Black</h3>
+                        </div>
+                        <div class="option-card" onclick="selectOption(5, 'Red')">
+                            <i class="fas fa-circle" style="color: #d32f2f;"></i>
+                            <h3>Red</h3>
+                        </div>
+                        <div class="option-card" onclick="selectOption(5, 'Laterite')">
+                            <i class="fas fa-cubes"></i>
+                            <h3>Laterite</h3>
+                        </div>
+                        <div class="option-card" onclick="selectOption(5, 'Desert')">
+                            <i class="fas fa-sun"></i>
+                            <h3>Desert</h3>
+                        </div>
+                        <div class="option-card" onclick="selectOption(5, 'Mountain')">
+                            <i class="fas fa-mountain"></i>
+                            <h3>Mountain</h3>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="soil_type" id="soil_type">
+
+                    <div class="actions" style="justify-content: space-between;">
+                        <button type="button" class="next-btn btn-animated" onclick="prevStep(4)"
+                            style="background: #ccc; color: #333;">Back</button>
+                        <button type="button" class="next-btn btn-animated" id="btn-5" disabled
+                            onclick="submitOnboarding()">Finish
+                            <i class="fas fa-check"></i></button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/onboarding-logic.js"></script>
+</body>
+
+</html>

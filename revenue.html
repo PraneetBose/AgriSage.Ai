@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revenue Analysis - AgriSage.ai</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard-layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="dark-mode">
+
+    <aside class="sidebar">
+        <div class="user-profile">
+            <div class="avatar-container">
+                <div class="avatar"><img src="" alt="User" id="user-avatar-img"></div>
+                <div class="edit-avatar-btn" onclick="editAvatar()"><i class="fas fa-camera"></i></div>
+            </div>
+            <h3 class="user-name" id="display-name">Loading...</h3>
+            <div class="user-role-container" onclick="editRole()">
+                <p class="user-role" id="display-role">Estate Manager</p>
+            </div>
+            <span class="badge-premium">PREMIUM</span>
+        </div>
+
+        <ul class="nav-links">
+            <li class="nav-item" onclick="window.location.href='dashboard.html'"><i class="fas fa-th-large"></i>
+                <span>Dashboard</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='ai.html'">
+                <i class="fas fa-robot"></i> <span
+                    style="background: linear-gradient(90deg, #FF8E53, #FF6B6B); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;">AgriSathi
+                    AI</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='agri-connect.html'"><i class="fas fa-users"></i>
+                <span class="text-gradient-purple">AgriConnect</span>
+            </li>
+            <li class="nav-item active" onclick="window.location.href='revenue.html'"><i class="fas fa-chart-line"></i>
+                <span>Revenue Analysis</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='inventory.html'"><i class="fas fa-boxes"></i>
+                <span>Inventory</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='crop-data.html'"><i class="fas fa-database"></i>
+                <span>Crop Data</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='resellers.html'"><i class="fas fa-handshake"></i>
+                <span>Resellers</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='help.html'"><i class="fas fa-headset"></i> <span>Help &
+                    Support</span></li>
+            <li class="nav-item" onclick="window.location.href='profile.html'"><i class="fas fa-user-circle"></i>
+                <span>Profile</span>
+            </li>
+        </ul>
+
+        <div class="logout-link" id="logout-btn"
+            style="padding: 1rem; cursor: pointer; color: #888; display: flex; align-items: center; margin-top: auto;">
+            <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i>
+            <span class="signout-glow">Sign Out</span>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div style="font-weight: 800; color: var(--text-color); font-size: 1.2rem;">AgriSage.ai</div>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <div class="live-badge" style="color: var(--accent-color);">LIVE DATA <div class="live-dot"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-header">
+            <h1>Revenue Calculator</h1>
+            <p>Estimate your potential earnings.</p>
+        </div>
+
+        <div
+            style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2rem; margin-top: 2rem; margin-bottom: 3rem;">
+            <!-- Left Column: Inputs & Calculators -->
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+
+                <!-- 1. Production & Revenue Input -->
+                <div class="card-3d" style="padding: 2.5rem; border-radius: 20px;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--text-color);">1. Production Revenue</h3>
+                    <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                        <input type="number" id="rev-area" class="form-control" placeholder="Acres">
+                        <input type="number" id="rev-kg" class="form-control" placeholder="Yield (KG)">
+                        <input type="number" id="rev-price" class="form-control" placeholder="Price (₹/KG)">
+                    </div>
+                </div>
+
+                <!-- 2. Expense Tracking -->
+                <div class="card-3d" style="padding: 2.5rem; border-radius: 20px;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--text-color);">2. Cost of Production</h3>
+                    <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="input-group">
+                            <label
+                                style="font-size: 0.9rem; color: #fff; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.5rem;">Seeds</label>
+                            <input type="number" id="cost-seeds" class="form-control" placeholder="₹">
+                        </div>
+                        <div class="input-group">
+                            <label
+                                style="font-size: 0.9rem; color: #fff; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.5rem;">Fertilizers</label>
+                            <input type="number" id="cost-fert" class="form-control" placeholder="₹">
+                        </div>
+                        <div class="input-group">
+                            <label
+                                style="font-size: 0.9rem; color: #fff; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.5rem;">Labor</label>
+                            <input type="number" id="cost-labor" class="form-control" placeholder="₹">
+                        </div>
+                        <div class="input-group">
+                            <label
+                                style="font-size: 0.9rem; color: #fff; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.5rem;">Machinery/Fuel</label>
+                            <input type="number" id="cost-mach" class="form-control" placeholder="₹">
+                        </div>
+                        <div class="input-group" style="grid-column: span 2;">
+                            <label
+                                style="font-size: 0.9rem; color: #fff; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 0.5rem;">Water/Irrigation</label>
+                            <input type="number" id="cost-water" class="form-control" placeholder="₹">
+                        </div>
+                    </div>
+                    <button class="submit-btn btn-animated" style="width: 100%; margin-top: 2rem; border-radius: 30px;"
+                        onclick="calculateProfitability()">
+                        <i class="fas fa-calculator" style="margin-right: 8px;"></i> ANALYZE PROFIT
+                    </button>
+                </div>
+
+                <!-- 3. Loan Calculator -->
+                <div class="card-3d"
+                    style="padding: 2.5rem; border-radius: 20px; background: linear-gradient(135deg, rgba(30,30,30,0.9), rgba(0,0,0,0.9)); border: 1px solid rgba(255,255,255,0.05);">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--accent-color);"><i class="fas fa-university"></i>
+                        Loan Calculator</h3>
+                    <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <input type="number" id="loan-amt" class="form-control" placeholder="Amount (₹)"
+                            style="background: rgba(0,0,0,0.4) !important; border: 1px solid rgba(255,255,255,0.1); padding: 1.2rem; border-radius: 16px; color: white; font-size: 1.1rem;">
+                        <input type="number" id="loan-rate" class="form-control" placeholder="Rate (%)"
+                            style="background: rgba(0,0,0,0.4) !important; border: 1px solid rgba(255,255,255,0.1); padding: 1.2rem; border-radius: 16px; color: white; font-size: 1.1rem;">
+                        <input type="number" id="loan-term" class="form-control" placeholder="Months"
+                            style="grid-column: span 2; background: rgba(0,0,0,0.4) !important; border: 1px solid rgba(255,255,255,0.1); padding: 1.2rem; border-radius: 16px; color: white; font-size: 1.1rem;">
+                    </div>
+                    <div
+                        style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                        <button class="action-btn-pill" onclick="calculateLoan()"
+                            style="padding: 10px 24px; font-weight: bold;">Calculate EMI</button>
+                        <div style="text-align: right;">
+                            <small style="color: #bbb; display: block; margin-bottom: 5px;">Monthly EMI</small>
+                            <div id="loan-emi" style="font-size: 1.8rem; color: white; font-weight: 800;">₹ 0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Analytics Dashboard -->
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                <!-- Summary Cards -->
+                <div class="overview-grid" style="grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0;">
+                    <div class="overview-card"
+                        style="background: linear-gradient(135deg, #1b5e20, #004d40) !important; box-shadow: 0 10px 20px rgba(0,0,0,0.3);">
+                        <div class="overview-label" style="color: rgba(255,255,255,0.8);">Total Revenue</div>
+                        <div class="overview-value" id="res-revenue" style="color: white; font-size: 1.8rem;">₹ 0</div>
+                    </div>
+                    <div class="overview-card"
+                        style="background: linear-gradient(135deg, #b71c1c, #880e4f) !important; box-shadow: 0 10px 20px rgba(0,0,0,0.3);">
+                        <div class="overview-label" style="color: rgba(255,255,255,0.8);">Total Cost</div>
+                        <div class="overview-value" id="res-cost" style="color: white; font-size: 1.8rem;">₹ 0</div>
+                    </div>
+                </div>
+
+                <!-- Net Profit & Ask Sathi Row -->
+                <div style="display: flex; gap: 1rem;">
+                    <!-- Net Profit (50%) -->
+                    <div class="card-3d"
+                        style="flex: 1; padding: 2rem; text-align: center; border: 1px solid var(--accent-color); background: rgba(0,0,0,0.2); display: flex; flex-direction: column; justify-content: center;">
+                        <div style="font-size: 0.9rem; color: #fff; text-transform: uppercase; letter-spacing: 2px;">Net
+                            Profit</div>
+                        <div style="font-size: 2.8rem; color: var(--accent-color); font-weight: 800; margin: 0.5rem 0;"
+                            id="res-profit">₹ 0</div>
+                        <div style="font-size: 0.9rem; color: var(--primary-light);">Profit per Acre: <span id="res-ppa"
+                                style="font-weight: bold; color: white;">₹ 0</span></div>
+                    </div>
+
+                    <!-- Ask Sathi Manager (50%) -->
+                    <div class="card-3d" onclick="openSathiManager()"
+                        style="flex: 1; padding: 2rem; background: linear-gradient(135deg, #7B1FA2, #E040FB) !important; box-shadow: 0 10px 20px rgba(123, 31, 162, 0.4); cursor: pointer; transition: transform 0.3s; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; overflow: hidden; border: none; border-radius: 20px;">
+
+                        <!-- Purple Glow Animation -->
+                        <div
+                            style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%); animation: rotate 12s linear infinite;">
+                        </div>
+
+                        <div style="position: relative; z-index: 1;">
+                            <div
+                                style="background: rgba(255,255,255,0.2); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto; backdrop-filter: blur(5px); box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                                <i class="fas fa-user-astronaut" style="font-size: 2rem; color: white;"></i>
+                            </div>
+                            <h3
+                                style="margin: 0; color: white; font-size: 1.3rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">
+                                Ask Sathi Manager</h3>
+                            <p
+                                style="margin: 0.5rem 0 0; color: rgba(255,255,255,0.95); font-size: 0.9rem; font-weight: 500;">
+                                Deep Algorithm Analysis</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="card-3d" style="padding: 2rem;">
+                    <h4 style="margin-bottom: 1.5rem; color: #fff;">Expense Breakdown</h4>
+                    <div style="height: 220px; position: relative;">
+                        <canvas id="expenseChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card-3d" style="padding: 2rem;">
+                    <h4 style="margin-bottom: 1.5rem; color: #fff;">Historical Revenue</h4>
+                    <div style="height: 180px;">
+                        <canvas id="revenueTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Predictor -->
+        <div class="card-3d"
+            style="padding: 2.5rem; border-radius: 20px; background: linear-gradient(135deg, #1a2634, #0b1117); border: 1px solid #2c3e50; margin-bottom: 4rem;">
+            <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; border-radius: 50%; background: var(--accent-color); display: flex; align-items: center; justify-content: center; color: black; font-size: 1.5rem; box-shadow: 0 0 20px rgba(46,125,50,0.4);">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>Revenue Predictor AI</h3>
+            </div>
+            <p style="color: #ccc; font-size: 1rem; margin-bottom: 2rem;">Based on current production trends
+                and market fluctuations, our AI predicts your next cycle's potential.</p>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <small
+                        style="color: #888; text-transform: uppercase; letter-spacing: 1.5px; display: block; margin-bottom: 5px;">Projected
+                        Next Earning</small>
+                    <div id="predicted-revenue"
+                        style="font-size: 2.5rem; color: var(--accent-color); font-weight: 800;">₹
+                        0</div>
+                </div>
+                <div style="text-align: right;">
+                    <span id="prediction-confidence"
+                        style="color: #4cd137; font-weight: bold; background: rgba(76, 209, 55, 0.1); padding: 5px 12px; border-radius: 12px;">94%
+                        Confidence</span>
+                    <div style="color: #666; font-size: 0.8rem; margin-top: 5px;">Updated just now</div>
+                </div>
+            </div>
+        </div>
+    </main>
+    </div>
+    </div>
+    </main>
+
+    <!-- Ask Sathi Manager Modal -->
+    <div id="sathi-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(8px); background: rgba(0,0,0,0.6);">
+        <div class="glass-panel"
+            style="width: 90%; max-width: 600px; max-height: 80vh; display: flex; flex-direction: column; position: relative; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 0 50px rgba(123, 31, 162, 0.4); border-radius: 24px; background: rgba(20, 20, 25, 0.95);">
+
+            <!-- Header -->
+            <div
+                style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; background: linear-gradient(90deg, rgba(123, 31, 162, 0.2), transparent);">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div
+                        style="background: #fff; color: #7B1FA2; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                        SM</div>
+                    <div>
+                        <h3 style="margin: 0; color: white;">Sathi Manager</h3>
+                        <small style="color: #bbb;">AI Strategic Advisor</small>
+                    </div>
+                </div>
+                <button onclick="closeSathiModal()"
+                    style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;"><i
+                        class="fas fa-times"></i></button>
+            </div>
+
+            <!-- Content -->
+            <div id="sathi-content"
+                style="padding: 1.5rem; overflow-y: auto; flex-grow: 1; font-family: 'Roboto', sans-serif; line-height: 1.6; color: rgba(255,255,255,0.9);">
+                <!-- Dynamic Content Here -->
+                <div style="text-align: center; padding: 2rem;">
+                    <i class="fas fa-dna fa-spin" style="font-size: 3rem; color: #7B1FA2; margin-bottom: 1rem;"></i>
+                    <p>Running Deep Algorithms...</p>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div style="padding: 1rem; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3);">
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="sathi-input" placeholder="Ask follow-up question..."
+                        style="flex-grow: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 10px 15px; border-radius: 20px; color: white; outline: none;">
+                    <button onclick="sendSathiMessage()"
+                        style="background: #7B1FA2; border: none; width: 40px; height: 40px; border-radius: 50%; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i
+                            class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/revenue-logic.js"></script>
+    <script src="js/sathi-manager.js"></script>
+</body>
+
+</html>

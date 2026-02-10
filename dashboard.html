@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmIntel Console - AgriSage.ai</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard-layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/theme-init.js"></script>
+    <style>
+        /* Notification Center Styles */
+        .notification-wrapper {
+            position: relative;
+            cursor: pointer;
+            margin-right: 15px;
+        }
+
+        .notification-icon {
+            font-size: 1.4rem;
+            color: var(--text-color);
+            transition: transform 0.2s, color 0.2s;
+        }
+
+        .notification-wrapper:hover .notification-icon {
+            transform: scale(1.1) rotate(10deg);
+            color: var(--primary-color);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            font-size: 0.65rem;
+            font-weight: bold;
+            padding: 2px 5px;
+            border-radius: 10px;
+            min-width: 16px;
+            text-align: center;
+            border: 1px solid var(--background-color);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .notification-popup {
+            position: absolute;
+            top: 45px;
+            right: -10px;
+            width: 320px;
+            background: rgba(20, 20, 20, 0.85);
+            /* Glass Background */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-20px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notification-popup.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .popup-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .popup-header h4 {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--text-color);
+        }
+
+        .clear-all {
+            font-size: 0.75rem;
+            color: var(--text-color);
+            opacity: 0.6;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .clear-all:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .popup-body {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .popup-body::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .popup-body::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        .empty-state {
+            padding: 30px;
+            text-align: center;
+            color: #888;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        .notification-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.2s;
+            cursor: pointer;
+            display: flex;
+            gap: 12px;
+            align-items: start;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .notification-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notif-icon-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .notif-content {
+            flex-grow: 1;
+        }
+
+        .notif-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+            color: var(--text-color);
+        }
+
+        .notif-msg {
+            font-size: 0.75rem;
+            color: #aaa;
+            line-height: 1.3;
+        }
+
+        .notif-time {
+            font-size: 0.65rem;
+            color: #666;
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* Notification Types */
+        .type-alert {
+            background: rgba(255, 68, 68, 0.15);
+            color: #ff4444;
+        }
+
+        .type-warning {
+            background: rgba(255, 187, 51, 0.15);
+            color: #ffbb33;
+        }
+
+        .type-success {
+            background: rgba(0, 200, 81, 0.15);
+            color: #00c851;
+        }
+
+        .type-info {
+            background: rgba(51, 181, 229, 0.15);
+            color: #33b5e5;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+            }
+
+            80% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Farm Scoring System Styles */
+        .farm-score-card {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            min-height: 300px;
+            padding: 2.2rem !important;
+            /* Increased padding to fix edge issues */
+            border-radius: 28px !important;
+            /* Slightly more rounded to match premium feel */
+            border: none !important;
+            color: #00ffaa !important;
+            /* Even more vibrant cyan-green */
+            /* Re-implementing card-3d properties without !important background */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .farm-score-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+        }
+
+        .farm-score-card::before {
+            display: none;
+            /* Removed accent line for cleaner Risk Radar look */
+        }
+
+        .score-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            padding-bottom: 1rem;
+        }
+
+        .score-refresh-btn {
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s;
+            padding: 5px;
+        }
+
+        .score-refresh-btn:hover {
+            color: #FFFFFF;
+            transform: rotate(180deg);
+        }
+
+        .score-body {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            gap: 1rem;
+        }
+
+        .circular-progress-container {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .score-gauge {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .score-gauge circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+
+        .score-gauge .bg {
+            stroke: rgba(255, 255, 255, 0.1);
+        }
+
+        .score-gauge .progress {
+            stroke: #00ffaa;
+            stroke-dasharray: 251.2;
+            stroke-dashoffset: 251.2;
+            transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Support for animating CSS variable if browser allows, 
+           otherwise JS will update it manually for broader support */
+        @property --score-p {
+            syntax: '<percentage>';
+            inherits: false;
+            initial-value: 0%;
+        }
+
+        .score-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .score-val {
+            font-size: 2.5rem;
+            /* Slightly larger */
+            font-weight: 900;
+            color: #FFFFFF;
+            /* White value pops best on deep orange */
+            line-height: 1;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .score-label {
+            font-size: 0.75rem;
+            color: #00ffaa;
+            /* Vibrant label */
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 4px;
+            font-weight: 700;
+        }
+
+        .score-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .breakdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            color: #FFFFFF;
+            /* High visibility */
+            font-weight: 500;
+        }
+
+        .breakdown-item i {
+            width: 20px;
+            text-align: center;
+            color: #00ffaa;
+            font-size: 1.1rem;
+        }
+
+        .breakdown-item b {
+            color: #00ffaa;
+            /* Green for states like "Stable/Optimal" */
+            font-weight: 800;
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="user-profile">
+            <div class="avatar-container">
+                <div class="avatar"><img src="" alt="User" id="user-avatar-img"></div>
+                <div class="edit-avatar-btn" onclick="editAvatar()"><i class="fas fa-camera"></i></div>
+            </div>
+            <h3 class="user-name" id="display-name">Loading...</h3>
+            <div class="user-role-container" onclick="editRole()">
+                <p class="user-role" id="display-role">Estate Manager</p>
+            </div>
+        </div>
+
+        <ul class="nav-links">
+            <li class="nav-item active" onclick="window.location.href='dashboard.html'"><i class="fas fa-th-large"></i>
+                <span>Dashboard</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='ai.html'">
+                <i class="fas fa-robot"></i> <span
+                    style="background: linear-gradient(90deg, #FF8E53, #FF6B6B); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;">AgriSathi
+                    AI</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='agri-connect.html'"><i class="fas fa-users"></i>
+                <span class="text-gradient-purple">AgriConnect</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='revenue.html'"><i class="fas fa-chart-line"></i>
+                <span>Revenue Analysis</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='inventory.html'"><i class="fas fa-boxes"></i>
+                <span>Inventory</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='crop-data.html'"><i class="fas fa-database"></i>
+                <span>Crop Data</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='resellers.html'"><i class="fas fa-handshake"></i>
+                <span>Resellers</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='help.html'"><i class="fas fa-headset"></i> <span>Help &
+                    Support</span></li>
+            <li class="nav-item" onclick="window.location.href='profile.html'"><i class="fas fa-user-circle"></i>
+                <span>Profile</span>
+            </li>
+        </ul>
+
+        <div class="logout-link" id="logout-btn"
+            style="padding: 1rem; cursor: pointer; color: #888; display: flex; align-items: center; margin-top: auto;">
+            <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i>
+            <span class="signout-glow">Sign Out</span>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div style="font-weight: 800; color: var(--text-color); font-size: 1.2rem;">AgriSage.ai</div>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <!-- Notification Bell -->
+                <div class="notification-wrapper" onclick="toggleNotifications()">
+                    <i class="fas fa-bell notification-icon"></i>
+                    <span class="notification-badge" id="notification-badge" style="display: none;">0</span>
+
+                    <!-- Glassmorphism Popup -->
+                    <div class="notification-popup" id="notification-popup">
+                        <div class="popup-header">
+                            <h4>Notifications</h4>
+                            <span class="clear-all" onclick="clearNotifications(event)">Clear All</span>
+                        </div>
+                        <div class="popup-body" id="notification-list">
+                            <div class="empty-state">No new notifications</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="live-badge" style="color: var(--accent-color);">LIVE DATA <div class="live-dot"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-header">
+            <h1>Farm Insights</h1>
+            <p>Real-time monitoring for <span id="dash-location">Sector A</span></p>
+        </div>
+
+        <div class="dashboard-top-grid">
+            <!-- Weather Card (Redesigned) -->
+            <div class="weather-advanced card-3d" id="weather-card-container"
+                style="background: linear-gradient(135deg, #1A237E 0%, #3949AB 100%) !important; color: white; padding: 0; overflow: hidden; position: relative; border-radius: 20px;">
+
+                <!-- Main Layout -->
+                <div style="display: flex; flex-direction: column; height: 100%;">
+
+                    <!-- Top Section -->
+                    <div style="display: flex; justify-content: space-between; padding: 1.5rem;">
+                        <!-- Left: Location & Main Temp -->
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-map-marker-alt"></i> <span id="weather-loc">Detecting...</span>
+                            </h3>
+                            <div style="font-size: 0.9rem; opacity: 0.8; margin-top: 5px;" id="weather-date">Loading
+                                date...</div>
+
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem;">
+                                <i id="weather-icon-main" class="fas fa-sun"
+                                    style="font-size: 3rem; color: #FFD54F;"></i>
+                                <div style="font-size: 4rem; font-weight: 700; line-height: 1;"><span
+                                        id="val-temp">--</span>°</div>
+                            </div>
+                            <div style="font-size: 1rem; margin-top: 0.5rem;">
+                                <span id="val-desc">Clear</span> • <span style="opacity: 0.8;">Feels like <span
+                                        id="val-feels-like">--</span>°</span>
+                            </div>
+                        </div>
+
+                        <!-- Right: Details Grid -->
+                        <div style="display: flex; flex-direction: column; gap: 0.8rem; min-width: 140px;">
+                            <div
+                                style="background: rgba(255,255,255,0.15); padding: 0.8rem; border-radius: 12px; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(5px);">
+                                <i class="fas fa-tint" style="font-size: 1.2rem; opacity: 0.9;"></i>
+                                <div>
+                                    <div style="font-size: 0.7rem; opacity: 0.8;">Precipitation</div>
+                                    <div style="font-weight: bold;" id="val-precip">0%</div>
+                                </div>
+                            </div>
+                            <div
+                                style="background: rgba(255,255,255,0.15); padding: 0.8rem; border-radius: 12px; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(5px);">
+                                <i class="fas fa-sun" style="font-size: 1.2rem; opacity: 0.9;"></i>
+                                <div>
+                                    <div style="font-size: 0.7rem; opacity: 0.8;">UV Index</div>
+                                    <div style="font-weight: bold;" id="val-uv">Low</div>
+                                </div>
+                            </div>
+                            <div
+                                style="background: rgba(255,255,255,0.15); padding: 0.8rem; border-radius: 12px; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(5px);">
+                                <i class="fas fa-wind" style="font-size: 1.2rem; opacity: 0.9;"></i>
+                                <div>
+                                    <div style="font-size: 0.7rem; opacity: 0.8;">Wind</div>
+                                    <div style="font-weight: bold;" id="val-wind">-- km/h</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom: Hourly Forecast Scroll -->
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; white-space: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;"
+                        id="hourly-forecast-container">
+                        <!-- Items injected by JS -->
+                        <div style="display: inline-block; text-align: center; padding: 0 1rem; opacity: 0.7;">Loading
+                            forecast...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Risk Radar Card -->
+            <div class="ai-insight-card" id="risk-radar-card"
+                style="background: transparent; box-shadow: none; border: none; padding: 0;">
+                <div id="risk-content" style="height: 100%;">
+                    <!-- Initial Loading State -->
+                    <div
+                        style="background: linear-gradient(135deg, #1e1e2f 0%, #2a2a40 100%); border-radius: 16px; padding: 1.5rem; text-align: center; color: white;">
+                        <i class="fas fa-spinner fa-spin"
+                            style="font-size: 2rem; color: #666; margin-bottom: 10px;"></i>
+                        <p style="font-size: 0.9rem; color: #888;">Initializing AgriSathi AI...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Growth Assistant Card (Upgraded) -->
+            <div class="growth-assistant card-3d" onclick="openGrowthAssistant()"
+                style="cursor: pointer; background: linear-gradient(135deg, #00C853, #69F0AE) !important; box-shadow: 0 10px 20px rgba(0, 200, 83, 0.4); border: none; overflow: hidden; position: relative; min-height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+
+                <!-- Green Glow Animation -->
+                <div
+                    style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%); animation: rotate 15s linear infinite;">
+                </div>
+
+                <div style="position: relative; z-index: 1;">
+                    <div
+                        style="background: rgba(255,255,255,0.2); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto; backdrop-filter: blur(5px); box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                        <i class="fas fa-leaf" style="font-size: 2rem; color: white;"></i>
+                    </div>
+                    <h3 style="margin: 0; color: white; font-size: 1.4rem; font-weight: 800; letter-spacing: 0.5px;">
+                        Growth Assistant</h3>
+                    <p style="margin: 0.5rem 0 0; color: rgba(255,255,255,0.95); font-size: 0.95rem; font-weight: 600;">
+                        Tap for AI Optimization Steps</p>
+                </div>
+            </div>
+
+            <!-- Farm Scoring System Card -->
+            <div class="farm-score-card" id="farm-score-card"
+                style="background: linear-gradient(135deg, #FF9500 0%, #FF5E00 100%) !important;">
+                <div class="score-header" style="margin-bottom: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div
+                            style="background: rgba(255,255,255,0.2); width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-certificate" style="color: #00ffaa; font-size: 1.4rem;"></i>
+                        </div>
+                        <div style="display: flex; flex-direction: column;">
+                            <h3
+                                style="margin: 0; color: #FFFFFF; font-size: 1.4rem; font-weight: 900; letter-spacing: -0.5px;">
+                                Farm Score</h3>
+                            <small style="color: rgba(255, 255, 255, 0.9); font-weight: 600;">AI Performance
+                                Index</small>
+                        </div>
+                    </div>
+                    <div class="score-refresh-btn" onclick="updateFarmScoreUI()" title="Refresh Score">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                </div>
+                <div class="score-body">
+                    <div class="circular-progress-container">
+                        <svg class="score-gauge" id="score-gauge" viewBox="0 0 100 100">
+                            <circle class="bg" cx="50" cy="50" r="40"></circle>
+                            <circle class="progress" id="score-ring" cx="50" cy="50" r="40"></circle>
+                        </svg>
+                        <div class="score-content">
+                            <span class="score-val" id="score-text">--</span>
+                            <span class="score-label">Rating</span>
+                        </div>
+                    </div>
+                    <div class="score-breakdown" id="score-details">
+                        <div class="breakdown-item">
+                            <i class="fas fa-shield-alt"></i> <span>Stability: </span> <b id="score-stability">--</b>
+                        </div>
+                        <div class="breakdown-item">
+                            <i class="fas fa-seedling"></i> <span>Yield: </span> <b id="score-yield">--</b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Farm Profile Grid -->
+        <h3>Farm Profile</h3>
+        <div class="overview-grid">
+            <div class="overview-card card-3d">
+                <i class="fas fa-seedling overview-icon"></i>
+                <div class="overview-label">Primary Crop</div>
+                <div class="overview-value" id="profile-crop">--</div>
+            </div>
+            <div class="overview-card card-3d">
+                <i class="fas fa-ruler-combined overview-icon"></i>
+                <div class="overview-label">Land Size</div>
+                <div class="overview-value" id="profile-land">--</div>
+            </div>
+            <div class="overview-card card-3d">
+                <i class="fas fa-exclamation-circle overview-icon"></i>
+                <div class="overview-label">Key Challenge</div>
+                <div class="overview-value" id="profile-diff">--</div>
+            </div>
+            <div class="overview-card card-3d">
+                <i class="fas fa-layer-group overview-icon"></i>
+                <div class="overview-label">Current Stage</div>
+                <div class="overview-value" id="profile-stage">--</div>
+            </div>
+            <div class="overview-card card-3d" style="position: relative; cursor: pointer;" onclick="editSoilType()">
+                <i class="fas fa-flask overview-icon"></i>
+                <div class="overview-label">Soil Type <i class="fas fa-pencil-alt"
+                        style="font-size: 0.7rem; margin-left: 5px; opacity: 0.5;"></i></div>
+                <div class="overview-value" id="profile-soil">--</div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Growth Assistant Modal -->
+    <div id="growth-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(8px); background: rgba(0,0,0,0.6);">
+        <div class="glass-panel"
+            style="width: 90%; max-width: 600px; max-height: 80vh; display: flex; flex-direction: column; position: relative; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 0 50px rgba(0, 200, 83, 0.4); border-radius: 24px; background: rgba(20, 20, 25, 0.95);">
+
+            <!-- Header -->
+            <div
+                style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; background: linear-gradient(90deg, rgba(0, 200, 83, 0.2), transparent);">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div
+                        style="background: #fff; color: #00C853; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                        GA</div>
+                    <div>
+                        <h3 style="margin: 0; color: white;">Growth Assistant</h3>
+                        <small style="color: #bbb;">Deep Optimization Engine</small>
+                    </div>
+                </div>
+                <button onclick="closeGrowthModal()"
+                    style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;"><i
+                        class="fas fa-times"></i></button>
+            </div>
+
+            <!-- Content -->
+            <div id="growth-content"
+                style="padding: 1.5rem; overflow-y: auto; flex-grow: 1; font-family: 'Roboto', sans-serif; line-height: 1.6; color: rgba(255,255,255,0.9);">
+                <!-- Dynamic Content Here -->
+                <div style="text-align: center; padding: 2rem;">
+                    <i class="fas fa-seedling fa-spin"
+                        style="font-size: 3rem; color: #00C853; margin-bottom: 1rem;"></i>
+                    <p>Scanning crop growth metrics...</p>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div style="padding: 1rem; border-top: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3);">
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="growth-input" placeholder="Ask follow-up..."
+                        style="flex-grow: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 10px 15px; border-radius: 20px; color: white; outline: none;">
+                    <button onclick="sendGrowthMessage()"
+                        style="background: #00C853; border: none; width: 40px; height: 40px; border-radius: 50%; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center;"><i
+                            class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js?v=4.9.5"></script>
+    <script src="js/growth-logic.js"></script>
+</body>
+
+</html>

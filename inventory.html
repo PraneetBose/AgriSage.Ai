@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory - AgriSage.ai</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard-layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .badge-category {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="user-profile">
+            <div class="avatar-container">
+                <div class="avatar"><img src="" alt="User" id="user-avatar-img"></div>
+                <div class="edit-avatar-btn" onclick="editAvatar()"><i class="fas fa-camera"></i></div>
+            </div>
+            <h3 class="user-name" id="display-name">Loading...</h3>
+            <div class="user-role-container" onclick="editRole()">
+                <p class="user-role" id="display-role">Estate Manager</p>
+            </div>
+            <span class="badge-premium">PREMIUM</span>
+        </div>
+
+        <ul class="nav-links">
+            <li class="nav-item" onclick="window.location.href='dashboard.html'"><i class="fas fa-th-large"></i>
+                <span>Dashboard</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='ai.html'">
+                <i class="fas fa-robot"></i> <span
+                    style="background: linear-gradient(90deg, #FF8E53, #FF6B6B); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;">AgriSathi
+                    AI</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='agri-connect.html'"><i class="fas fa-users"></i>
+                <span class="text-gradient-purple">AgriConnect</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='revenue.html'"><i class="fas fa-chart-line"></i>
+                <span>Revenue Analysis</span>
+            </li>
+            <li class="nav-item active" onclick="window.location.href='inventory.html'"><i class="fas fa-boxes"></i>
+                <span>Inventory</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='crop-data.html'"><i class="fas fa-database"></i>
+                <span>Crop Data</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='resellers.html'"><i class="fas fa-handshake"></i>
+                <span>Resellers</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='help.html'"><i class="fas fa-headset"></i> <span>Help &
+                    Support</span></li>
+            <li class="nav-item" onclick="window.location.href='profile.html'"><i class="fas fa-user-circle"></i>
+                <span>Profile</span>
+            </li>
+        </ul>
+
+        <div class="logout-link" id="logout-btn"
+            style="padding: 1rem; cursor: pointer; color: #888; display: flex; align-items: center; margin-top: auto;">
+            <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i>
+            <span class="signout-glow">Sign Out</span>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div style="font-weight: 800; color: var(--text-color); font-size: 1.2rem;">AgriSage.ai</div>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <div class="live-badge" style="color: var(--accent-color);">LIVE DATA <div class="live-dot"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-header"
+            style="display: flex; justify-content: space-between; align-items: center; flex-wrap:wrap; gap:1rem;">
+            <div>
+                <h1>Inventory Management</h1>
+                <p>Track seeds, fertilizers, pesticides, and tools.</p>
+            </div>
+            <button class="action-btn-pill btn-animated" onclick="openAddInventoryModal()"><i class="fas fa-plus"></i>
+                Add New Item</button>
+        </div>
+
+        <!-- Inventory Summary -->
+        <div class="overview-grid" style="margin-bottom: 2rem;">
+            <div class="overview-card card-3d">
+                <i class="fas fa-coins overview-icon"
+                    style="color:var(--primary-color); background:rgba(212,175,55,0.1);"></i>
+                <div class="overview-label">Total Value</div>
+                <div class="overview-value" id="total-inv-value">₹0</div>
+            </div>
+            <div class="overview-card card-3d">
+                <i class="fas fa-boxes overview-icon"
+                    style="color:var(--accent-color); background:rgba(0,230,118,0.1);"></i>
+                <div class="overview-label">Total Items</div>
+                <div class="overview-value" id="total-inv-items">0</div>
+            </div>
+        </div>
+
+        <div class="card-3d" style="overflow-x: auto; padding: 0; margin-top: 1rem;">
+            <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                <thead style="background: rgba(212, 175, 55, 0.05); border-bottom: 2px solid var(--border-color);">
+                    <tr>
+                        <th style="padding: 1.2rem 1rem; text-align: left; color: var(--text-color);">Item Name</th>
+                        <th style="padding: 1.2rem 1rem; text-align: left; color: var(--text-color);">Category</th>
+                        <th style="padding: 1.2rem 1rem; text-align: left; color: var(--text-color);">Quantity</th>
+                        <th style="padding: 1.2rem 1rem; text-align: left; color: var(--text-color);">Unit Cost</th>
+                        <th style="padding: 1.2rem 1rem; text-align: left; color: var(--text-color);">Total Value</th>
+                        <th style="padding: 1.2rem 1rem; text-align: left; color: var(--text-color);">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-table-body" style="background: var(--card-bg);">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Inventory Modal -->
+    <div id="inventory-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 1000; justify-content: center; align-items: center;">
+        <div class="card-3d"
+            style="background: var(--card-bg); padding: 2rem; border-radius: 16px; width: 90%; max-width: 500px; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 id="inventory-modal-title" style="margin: 0;">Add Inventory Item</h3>
+                <button onclick="closeInventoryModal()" class="close-modal-x">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="inventory-form" onsubmit="handleInventorySubmit(event)">
+                <input type="hidden" id="inv-item-id">
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; color: #aaa; font-size: 0.9rem;">Item
+                            Name</label>
+                        <input type="text" name="item_name" required class="modal-input">
+                    </div>
+                    <div>
+                        <label
+                            style="display: block; margin-bottom: 0.5rem; color: #aaa; font-size: 0.9rem;">Category</label>
+                        <select name="category" class="modal-input">
+                            <option value="Seeds">Seeds</option>
+                            <option value="Fertilizers">Fertilizers</option>
+                            <option value="Pesticides">Pesticides</option>
+                            <option value="Tools">Tools</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem; margin-top:1rem;">
+                    <div>
+                        <label
+                            style="display: block; margin-bottom: 0.5rem; color: #aaa; font-size: 0.9rem;">Quantity</label>
+                        <input type="number" step="0.01" name="quantity" required class="modal-input">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; color: #aaa; font-size: 0.9rem;">Unit (kg,
+                            L, pcs)</label>
+                        <input type="text" name="unit" value="kg" required class="modal-input">
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem; margin-top:1rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; color: #aaa; font-size: 0.9rem;">Cost per
+                            Unit (₹)</label>
+                        <input type="number" step="0.01" name="cost_per_unit" required class="modal-input">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; color: #aaa; font-size: 0.9rem;">Low Stock
+                            Limit</label>
+                        <input type="number" step="0.01" name="low_stock_limit" value="10" required class="modal-input">
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; margin-top: 2rem;">
+                    <!-- Cancel button removed as per request, generic close X is now used -->
+                    <button type="submit" class="btn-animated" style="padding: 10px 40px; width: 100%;">Save
+                        Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        /* Modal Input Improvements */
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1) !important;
+            /* Brighter background */
+            color: white !important;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .modal-input:focus {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 230, 118, 0.2);
+        }
+
+        /* Illuminated Crox Button */
+        .close-modal-x {
+            background: transparent;
+            border: none;
+            color: #ff4444;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+            /* Glowing text */
+        }
+
+        .close-modal-x:hover {
+            color: #ff6b6b;
+            background: rgba(255, 68, 68, 0.1);
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.4);
+            /* Button glow */
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script> <!-- Reusing for profile logic -->
+    <script src="js/inventory.js"></script>
+</body>
+
+</html>

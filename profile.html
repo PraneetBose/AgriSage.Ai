@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - AgriSage.ai</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard-layout.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/theme-init.js"></script>
+    <style>
+        input,
+        textarea,
+        select {
+            outline: none !important;
+        }
+    </style>
+</head>
+
+<body class="dark-mode">
+    <aside class="sidebar">
+        <div class="user-profile">
+            <div class="avatar-container">
+                <div class="avatar"><img src="" alt="User" id="user-avatar-img"></div>
+                <div class="edit-avatar-btn" onclick="editAvatar()"><i class="fas fa-camera"></i></div>
+            </div>
+            <h3 class="user-name" id="display-name">Loading...</h3>
+            <div class="user-role-container" onclick="editRole()">
+                <p class="user-role" id="display-role">Estate Manager</p>
+            </div>
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item" onclick="window.location.href='dashboard.html'"><i class="fas fa-th-large"></i>
+                <span>Dashboard</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='ai.html'">
+                <i class="fas fa-robot"></i> <span
+                    style="background: linear-gradient(90deg, #FF8E53, #FF6B6B); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;">AgriSathi
+                    AI</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='agri-connect.html'"><i class="fas fa-users"></i>
+                <span class="text-gradient-purple">AgriConnect</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='revenue.html'"><i class="fas fa-chart-line"></i>
+                <span>Revenue Analysis</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='inventory.html'"><i class="fas fa-boxes"></i>
+                <span>Inventory</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='crop-data.html'"><i class="fas fa-database"></i>
+                <span>Crop Data</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='resellers.html'"><i class="fas fa-handshake"></i>
+                <span>Resellers</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='help.html'"><i class="fas fa-headset"></i> <span>Help &
+                    Support</span></li>
+            <li class="nav-item active" onclick="window.location.href='profile.html'"><i class="fas fa-user-circle"></i>
+                <span>Profile</span>
+            </li>
+        </ul>
+        <div class="logout-link" id="logout-btn"
+            style="padding: 1rem; cursor: pointer; color: #888; display: flex; align-items: center; margin-top: auto;">
+            <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i>
+            <span class="signout-glow">Sign Out</span>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div style="font-weight: 800; color: var(--text-color); font-size: 1.2rem;">AgriSage.ai</div>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <div class="live-badge" style="color: var(--accent-color);">LIVE DATA <div class="live-dot"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-header">
+            <h1>User Profile</h1>
+            <p>Manage your account settings and farm information.</p>
+        </div>
+
+        <div class="profile-container"
+            style="max-width: 900px; margin: 0 auto; padding-bottom: 4rem; display: flex; flex-direction: column; gap: 2rem;">
+            <!-- Profile Info Form -->
+            <form id="profile-form" class="inventory-form card-3d"
+                style="display: flex; flex-direction: column; gap: 1.5rem; padding: 2.5rem;">
+                <h2
+                    style="margin-bottom: 1rem; font-size: 1.4rem; color: var(--accent-color); display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-id-card"></i> Personal & Farm Details
+                </h2>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Full Name</label>
+                        <input type="text" name="full_name" id="profile-full-name" placeholder="Enter your full name"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Email Address</label>
+                        <input type="email" id="profile-email" disabled style="opacity: 0.6; cursor: not-allowed;">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-phone"></i> Phone Number</label>
+                        <input type="tel" name="phone" id="profile-phone" placeholder="Enter your phone number">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-seedling"></i> Primary Crop</label>
+                        <input type="text" name="primary_crop" id="profile-crop-input"
+                            placeholder="e.g. Wheat, Rice, Cotton">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-layer-group"></i> Current Stage</label>
+                        <select name="farming_stage" id="profile-stage-input">
+                            <option value="" disabled selected>Select Stage</option>
+                            <option value="Sowing">Sowing / Germination</option>
+                            <option value="Vegetative">Vegetative Growth</option>
+                            <option value="Flowering">Flowering</option>
+                            <option value="Fruiting">Fruiting / Grain Filling</option>
+                            <option value="Harvesting">Harvesting</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-exclamation-circle"></i> Current Issue</label>
+                        <input type="text" name="current_issue" id="profile-current-issue" list="issue-suggestions"
+                            placeholder="Select or type issue...">
+                        <datalist id="issue-suggestions">
+                            <!-- Populated by JS -->
+                        </datalist>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-ruler-combined"></i> Farm Size (Acres)</label>
+                        <input type="number" name="farm_size" id="profile-farm-size" placeholder="e.g. 10">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-map-marker-alt"></i> Location / District</label>
+                        <input type="text" name="location" id="profile-location" placeholder="e.g. Nagpur, Maharashtra">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-flask"></i> Soil Type</label>
+                        <input type="text" name="soil_type" id="profile-soil-input"
+                            placeholder="e.g. Alluvial, Black, Red" list="soil-suggestions">
+                        <datalist id="soil-suggestions">
+                            <option value="Alluvial">
+                            <option value="Black">
+                            <option value="Red">
+                            <option value="Laterite">
+                            <option value="Desert">
+                            <option value="Mountain">
+                        </datalist>
+                    </div>
+                </div>
+
+                <div class="form-group" style="grid-column: 1 / -1; width: 100%;">
+                    <label><i class="fas fa-home"></i> Farm Address</label>
+                    <textarea name="address" id="profile-address" rows="3" placeholder="Enter your full farm address"
+                        style="width: 100%; border-radius: 12px;"></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary btn-gold" id="save-profile-btn"
+                    style="width: 100%; margin-top: 1rem;">
+                    <i class="fas fa-save" style="margin-right: 8px;"></i> Save Profile Changes
+                </button>
+            </form>
+
+            <!-- Security Section -->
+            <div class="inventory-form card-3d" style="padding: 2.5rem;">
+                <h2
+                    style="margin-bottom: 1rem; font-size: 1.4rem; color: #ef5350; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-shield-alt"></i> Security Settings
+                </h2>
+                <p style="color: #888; margin-bottom: 2rem; font-size: 0.9rem;">Update your password regularly to keep
+                    your farm data secure.</p>
+
+                <div id="password-form" style="display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1rem;">
+                    <div class="form-group">
+                        <label><i class="fas fa-lock-open"></i> Current Password</label>
+                        <input type="password" id="current-password" placeholder="Enter current password" required>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label><i class="fas fa-key"></i> New Password</label>
+                            <input type="password" id="new-password" placeholder="Min 6 characters" required>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-check-double"></i> Confirm New Password</label>
+                            <input type="password" id="confirm-password" placeholder="Repeat new password" required>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-primary" onclick="requestPasswordChange()" id="save-password-btn"
+                        style="background: #ef5350; color: #fff; border: none; margin-top: 0.5rem;">
+                        <i class="fas fa-shield-alt" style="margin-right: 8px;"></i> Save & Request Approval
+                    </button>
+                    <p id="password-status"
+                        style="font-size: 0.8rem; color: #888; text-align: center; margin-top: 0.5rem;"></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+
+</html>
