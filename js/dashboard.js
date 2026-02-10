@@ -1,36 +1,33 @@
-const GEMINI_API_KEY = "AIzaSyB-IG24MNJU8fVglcFwVd0YTDLTTIcK17s";
-window.GEMINI_API_KEY = GEMINI_API_KEY;
+const GEMINI_API_KEY = null; // Removed for security (Server-side Only)
+window.GEMINI_API_KEY = null;
+
 const OWM_API_KEY = "448a11a48f1047a581dade12eccf9a18";
 window.notifications = window.notifications || [];
 window.unreadCount = window.unreadCount || 0;
 
 // --- MULTI-MODEL AI FALLBACK ---
+// --- SECURE AI CALL ---
 window.callAIWithFallback = async function (payload) {
-    const models = ['gemma-3-27b-it', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
-    const apiKey = window.GEMINI_API_KEY || "AIzaSyB-IG24MNJU8fVglcFwVd0YTDLTTIcK17s";
-    let lastError = null;
-    for (const model of models) {
-        try {
-            console.log(`[AI] Attempting ${model}...`);
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            if (!response.ok) {
-                if (response.status === 429) { console.warn(`[AI] ${model} rate limited.`); continue; }
-                throw new Error(`API returned ${response.status}`);
-            }
-            const data = await response.json();
-            if (data.candidates && data.candidates.length > 0) return data;
-            throw new Error("No candidates returned");
-        } catch (e) {
-            console.warn(`[AI] ${model} failed:`, e);
-            lastError = e;
+    try {
+        const response = await fetch('/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error?.message || `Server Error: ${response.status}`);
         }
+
+        return data;
+    } catch (e) {
+        console.error("AI Fallback Error:", e);
+        throw e;
     }
-    throw lastError || new Error("All AI models failed. Please try again later.");
 };
+
 
 async function sendAiMessage() {
     const input = document.getElementById('chat-input');
@@ -142,14 +139,8 @@ async function sendAiMessage() {
                 removeLoadingAndReply(aiText);
             }
         } else {
-            let availableModelsList = "Unknown";
-            try {
-                const listResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`);
-                const listData = await listResp.json();
-                if (listData.models) availableModelsList = listData.models.map(m => m.name.replace('models/', '')).join(", ");
-            } catch (e) { }
-            const errorMsg = lastError ? `Last Error: ${lastError}` : "All attempts failed without specific error.";
-            throw new Error(`${errorMsg}\n\nSystem detected these models as available: [${availableModelsList}]`);
+            const errorMsg = lastError ? `Last Error: ${lastError}` : "AI service unavailable.";
+            throw new Error(errorMsg);
         }
     } catch (error) {
         console.error("AI: Final Error", error);
@@ -1687,12 +1678,9 @@ window.openGrowthAssistant = async function () {
         const systemPrompt = "You are the AgriSage Growth Assistant. Provide a 3-step numbered optimization plan for the user's specific crop and stage. Format the steps clearly.";
         const msg = "Analyze my current farm status and give me 3 actionable steps to optimize yield.";
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemma-3-27b-it:generateContent?key=${GEMINI_API_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: `${systemPrompt}\n\nUser: ${msg}\n\nContext:\n${context}` }] }] })
+        const data = await window.callAIWithFallback({
+            contents: [{ parts: [{ text: `${systemPrompt}\n\nUser: ${msg}\n\nContext:\n${context}` }] }]
         });
-        const data = await response.json();
         const aiText = (data.candidates?.[0]?.content?.parts?.[0]?.text || "No recommendations found. Please check your profile details.").replace(/^```html\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '');
 
         // Parse steps
@@ -2146,17 +2134,13 @@ window.activateEmergencyMode = async () => {
         })) : [];
 
         // Call Gemini
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${window.currentModel || 'gemma-3-27b-it'}:generateContent?key=${GEMINI_API_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [
-                    ...historyContext,
-                    { role: "user", parts: [{ text: systemPrompt }] }
-                ]
-            })
+        // Call Gemini (Secure)
+        const data = await window.callAIWithFallback({
+            contents: [
+                ...historyContext,
+                { role: "user", parts: [{ text: systemPrompt }] }
+            ]
         });
-        const data = await response.json();
         const aiResponse = (data.candidates?.[0]?.content?.parts?.[0]?.text || "I'm sorry, I couldn't process that.").replace(/^```html\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '');
         if (aiResponse) {
             removeLoadingAndReply(aiResponse);
