@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriConnect - AgriSage.ai</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard-layout.css">
+    <!-- Chat CSS -->
+    <style>
+        .connect-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            justify-items: center;
+        }
+
+        .connect-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            min-height: 400px;
+        }
+
+        .connect-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .connect-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .connect-card:hover::before {
+            opacity: 1;
+        }
+
+        .connect-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent-color), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .connect-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+
+        .connect-desc {
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        /* Chat Modal Specifics */
+        .chat-full-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .chat-full-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .chat-window {
+            width: 90%;
+            max-width: 800px;
+            height: 80vh;
+            background: #1a1a1a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-title-lg {
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .live-indicator {
+            width: 8px;
+            height: 8px;
+            background: #00ff88;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ff88;
+            animation: pulse-green 2s infinite;
+        }
+
+        .chat-messages-area {
+            flex-grow: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            /* Custom Background */
+            background-color: #0d0d0d;
+            background-image: url('img/chat-bg-pattern.png');
+            background-repeat: repeat;
+            background-size: 400px;
+            background-blend-mode: overlay;
+            position: relative;
+        }
+
+        /* Dark overlay to ensure text readability against pattern */
+        .chat-messages-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            /* Adjust opacity for subtlety */
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Ensure messages assume higher z-index than overlay */
+        .global-msg {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            position: relative;
+            z-index: 1;
+        }
+
+        .msg-own {
+            align-self: flex-end;
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-bottom-right-radius: 2px;
+        }
+
+        .msg-other {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom-left-radius: 2px;
+        }
+
+        .msg-sender {
+            font-size: 0.7rem;
+            color: #888;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .chat-input-area {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chat-input-field {
+            flex-grow: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 20px;
+            border-radius: 30px;
+            color: white;
+            font-family: inherit;
+        }
+
+        .chat-input-field:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .chat-send-btn {
+            background: var(--accent-color);
+            color: black;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .chat-send-btn:hover {
+            transform: scale(1.1);
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/theme-init.js"></script>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="user-profile">
+            <div class="avatar-container">
+                <div class="avatar"><img src="" alt="User" id="user-avatar-img"></div>
+                <div class="edit-avatar-btn" onclick="editAvatar()"><i class="fas fa-camera"></i></div>
+            </div>
+            <h3 class="user-name" id="display-name">Loading...</h3>
+            <div class="user-role-container" onclick="editRole()">
+                <p class="user-role" id="display-role">Estate Manager</p>
+            </div>
+        </div>
+
+        <ul class="nav-links">
+            <li class="nav-item" onclick="window.location.href='dashboard.html'"><i class="fas fa-th-large"></i>
+                <span>Dashboard</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='ai.html'"><i class="fas fa-robot"></i> <span
+                    style="background: linear-gradient(90deg, #FF8E53, #FF6B6B); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;">AgriSathi
+                    AI</span>
+            </li>
+            <li class="nav-item active" onclick="window.location.href='agri-connect.html'"><i class="fas fa-users"></i>
+                <span class="text-gradient-purple">AgriConnect</span>
+            </li>
+
+            <li class="nav-item" onclick="window.location.href='revenue.html'"><i class="fas fa-chart-line"></i>
+                <span>Revenue Analysis</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='inventory.html'"><i class="fas fa-boxes"></i>
+                <span>Inventory</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='crop-data.html'"><i class="fas fa-database"></i>
+                <span>Crop Data</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='resellers.html'"><i class="fas fa-handshake"></i>
+                <span>Resellers</span>
+            </li>
+            <li class="nav-item" onclick="window.location.href='help.html'"><i class="fas fa-headset"></i> <span>Help &
+                    Support</span></li>
+            <li class="nav-item" onclick="window.location.href='profile.html'"><i class="fas fa-user-circle"></i>
+                <span>Profile</span>
+            </li>
+        </ul>
+
+        <div class="logout-link" id="logout-btn"
+            style="padding: 1rem; cursor: pointer; color: #888; display: flex; align-items: center; margin-top: auto;">
+            <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i>
+            <span class="signout-glow">Sign Out</span>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div style="font-weight: 800; color: var(--text-color); font-size: 1.2rem;">AgriSage.ai</div>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <div class="live-badge" style="color: var(--accent-color);">LIVE GLOBAL <div class="live-dot"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-header">
+            <h1>AgriConnect</h1>
+            <p>Connect with the global farming community in real-time.</p>
+        </div>
+
+        <div class="connect-grid">
+            <!-- Farmer Card -->
+            <div class="connect-card" onclick="joinGlobalChat('farmers')">
+                <i class="fas fa-tractor connect-icon"></i>
+                <div class="connect-title">Connect with Farmers</div>
+                <p class="connect-desc">Join the global discussion. Share tips, ask regarding crops, and connect with
+                    fellow farmers worldwide.</p>
+                <button class="btn-primary" style="margin-top: 1.5rem; width: 100%;">Join Chat</button>
+            </div>
+
+            <!-- Reseller Card -->
+            <div class="connect-card" onclick="joinGlobalChat('resellers')">
+                <i class="fas fa-store connect-icon"></i>
+                <div class="connect-title">Connect with Resellers</div>
+                <p class="connect-desc">Find buyers, discuss market rates, and connect with authorized resellers
+                    directly.</p>
+                <button class="btn-primary" style="margin-top: 1.5rem; width: 100%;">Join Chat</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Chat Modal -->
+    <div id="global-chat-overlay" class="chat-full-overlay">
+        <div class="chat-window">
+            <div class="chat-header">
+                <div class="chat-title-lg">
+                    <div class="live-indicator"></div>
+                    <span id="chat-room-title">Global Chat</span>
+                    <span id="live-users-count"
+                        style="font-size: 0.8rem; background: rgba(0,255,136,0.2); color: #00ff88; padding: 2px 8px; border-radius: 10px; margin-left: 10px;">0
+                        Live</span>
+                </div>
+                <button onclick="closeGlobalChat()"
+                    style="background:none; border:none; color:#888; cursor:pointer; font-size:1.2rem;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div id="global-chat-messages" class="chat-messages-area">
+                <!-- Messages populate here -->
+                <div style="text-align:center; color:#555; margin-top: 2rem;">Connecting to global server...</div>
+            </div>
+
+            <div class="chat-input-area">
+                <button class="chat-send-btn" onclick="startVoiceRecord()"
+                    style="background: rgba(255,255,255,0.1); margin-right: 10px;">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <input type="text" id="global-chat-input" class="chat-input-field" placeholder="Type a message..."
+                    maxlength="500">
+                <button class="chat-send-btn" onclick="sendGlobalMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+
+</html>

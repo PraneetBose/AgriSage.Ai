@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSage.ai - Intelligence for your Farm</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Roboto:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Landing Page Specific Overrides */
+        body {
+            font-family: 'Outfit', sans-serif;
+            /* Modern font from screenshot */
+            background-color: #ffffff;
+            /* Default light */
+            color: #1a1a1a;
+            overflow-x: hidden;
+        }
+
+        /* Animation Classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stagger-1 {
+            transition-delay: 0.1s;
+        }
+
+        .stagger-2 {
+            transition-delay: 0.2s;
+        }
+
+        .stagger-3 {
+            transition-delay: 0.3s;
+        }
+
+        .feature-box h3 {
+            color: #1a4731;
+            /* Deep, professional forest green */
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body class="landing-page">
+
+    <!-- Navbar -->
+    <nav class="lp-nav">
+        <div class="lp-container nav-container">
+            <div class="logo">
+                <i class="fas fa-leaf" style="color: var(--primary-color);"></i> AgriSage.AI
+            </div>
+            <ul class="nav-links">
+                <li><a href="#solutions">Solutions</a></li>
+                <li><a href="#platform">Platform</a></li>
+                <li><a href="#mission">Mission</a></li>
+                <li><a href="#stories">Success Stories</a></li>
+            </ul>
+            <div class="nav-auth">
+                <a href="login.html" class="btn-primary">Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="lp-hero">
+        <div class="lp-container hero-grid">
+            <div class="hero-text reveal">
+                <div class="badge-hero">FUTURE OF AGRICULTURE</div>
+                <h1>Intelligence for your Farm.<br>Harness AI for <span class="highlight-text">Higher Yields.</span>
+                </h1>
+                <p>The next generation of farming starts with data. Monitor crop health, predict yields with 98%
+                    accuracy, and optimize resource usage through AgriSage.ai.</p>
+                <div class="hero-actions">
+                    <a href="login.html" class="btn-primary btn-lg">Sign Up</a>
+                </div>
+                <div class="trusted-by">
+                    <div class="avatars">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Farmer">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Farmer">
+                    </div>
+                    <span>Trusted by <strong>1,800+ modern farmers</strong> globally</span>
+                </div>
+            </div>
+            <div class="hero-image reveal stagger-2">
+
+                <img src="hero-gen.png" alt="Smart Farmer" class="hero-img-main">
+                <div class="floating-card glass-panel">
+                    <div class="icon-box"><i class="fas fa-chart-line"></i></div>
+                    <div>
+                        <strong>Real-time Analysis</strong>
+                        <div>Nitrogen Level: 95% (Optimal)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section id="solutions" class="lp-section bg-light">
+        <div class="lp-container">
+            <div class="section-header text-center reveal">
+                <h2>Solutions for Modern Farmers</h2>
+                <p>Streamlining agricultural operations through advanced technology and intelligent data processing.</p>
+            </div>
+            <div class="features-grid-lp">
+                <div class="feature-box reveal stagger-1">
+                    <div class="f-icon green-bg"><i class="fas fa-expand"></i></div>
+                    <h3>Crop Analysis</h3>
+                    <p>Advanced image recognition to detect diseases and nutrient deficiencies early.</p>
+                </div>
+                <div class="feature-box reveal stagger-2">
+                    <div class="f-icon blue-bg"><i class="fas fa-chart-bar"></i></div>
+                    <h3>Yield Prediction</h3>
+                    <p>Accurate forecasts generated using historical data to help you plan your season.</p>
+                </div>
+                <div class="feature-box reveal stagger-3">
+                    <div class="f-icon yellow-bg"><i class="fas fa-sun"></i></div>
+                    <h3>Weather Insights</h3>
+                    <p>Hyper-local weather data integrated with crop models for precise irrigation.</p>
+                </div>
+                <div class="feature-box reveal stagger-1">
+                    <div class="f-icon purple-bg"><i class="fas fa-robot"></i></div>
+                    <h3>Automated Advice</h3>
+                    <p>Real-time, actionable recommendations powered by our agricultural knowledge engine.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dark Dashboard Section -->
+    <section id="platform" class="lp-section dark-section">
+        <div class="lp-container dashboard-grid">
+            <div class="dash-text reveal">
+                <h2>Data-Driven Decisions, <br><span class="highlight-green">Simplified.</span></h2>
+                <ul class="check-list">
+                    <li><i class="fas fa-check-circle"></i> <strong>Real-time Dashboard</strong><br>Monitor all your
+                        fields from a single intuitive interface.</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>AI Smart Alerts</strong><br>Get notified immediately
+                        about pests, irrigation issues, or weather drops.</li>
+                    <li><i class="fas fa-check-circle"></i> <strong>Detailed Exportable Reports</strong><br>Generate
+                        comprehensive growth and health reports for stakeholders.</li>
+                </ul>
+            </div>
+            <div class="dash-preview reveal stagger-2">
+                <!-- Abstract Tech/Dashboard Image -->
+                <div class="browser-mockup">
+                    <div class="browser-header">
+                        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                        <div class="url-bar">agrisage.ai/dashboard</div>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2940&auto=format&fit=crop"
+                        alt="Dashboard Interface" class="dash-img">
+
+                    <!-- Floating Widgets for authenticity -->
+                    <div class="float-widget w1 glass-dark">
+                        <span>Growth Index</span>
+                        <div class="mini-chart"></div>
+                        <h3>+12.4%</h3>
+                    </div>
+                    <div class="float-widget w2 glass-dark">
+                        <span>Water Usage</span>
+                        <div class="loader-circle"></div>
+                        <small>Optimizing...</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section id="mission" class="lp-section text-center">
+        <div class="lp-container reveal">
+            <h2 class="mb-2">Our Mission</h2>
+            <div class="mission-quote">
+                "At AgriSage.ai, we believe that technology should serve the earth, not the other way around. Our
+                mission is to democratize access to advanced agricultural data and AI tools, making sustainable,
+                high-yield farming accessible to everyone."
+            </div>
+            <div class="divider-line"></div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="stories" class="lp-section bg-light">
+        <div class="lp-container">
+            <h2 class="text-center mb-4 reveal">Voice of Modern Farmers</h2>
+            <div class="testimonials-grid">
+                <div class="t-card reveal stagger-1">
+                    <div class="stars">★★★★★</div>
+                    <p>"The disease detection AI is uncanny. It spotted early signs of rust that our scouts missed,
+                        saving the entire west wing of our vineyard."</p>
+                    <div class="t-user">
+                        <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Elena">
+                        <div>
+                            <strong>Elena Rodriguez</strong>
+                            <small>Sonoma Estates</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="t-card reveal stagger-2">
+                    <div class="stars">★★★★★</div>
+                    <p>"As a small-scale grower, I thought this tech was only for big corps. AgriSage is affordable and
+                        incredibly easy to use."</p>
+                    <div class="t-user">
+                        <img src="https://randomuser.me/api/portraits/men/86.jpg" alt="Samuel">
+                        <div>
+                            <strong>Samuel Thompson</strong>
+                            <small>Thompson Farms</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="t-card reveal stagger-3">
+                    <div class="stars">★★★★★</div>
+                    <p>"The revenue tracking features helped me cut waste by 15% in just one season. The ROI is
+                        immediate."</p>
+                    <div class="t-user">
+                        <img src="https://randomuser.me/api/portraits/men/33.jpg" alt="Marcus">
+                        <div>
+                            <strong>Marcus Chen</strong>
+                            <small>GreenValley Organics</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer CTA -->
+    <section class="cta-banner reveal">
+        <div class="cta-content">
+            <h2>Ready to Transform Your Farm?</h2>
+            <p>Join thousands of farmers using AgriSage.ai to optimize their harvest today. No credit card required to
+                start.</p>
+            <div class="cta-btns">
+                <a href="login.html" class="btn-white">Sign Up</a>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="lp-footer">
+        <div class="lp-container footer-flex">
+            <div class="footer-logo">AgriSage.AI</div>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="mailto:praneetbose07@gmail.com">Contact Support</a>
+            </div>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+        <div class="text-center mt-2 copyright">
+            &copy; 2026 AgriSage AI. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+
+                    }
+                });
+            }, observerOptions);
+
+            const revealElements = document.querySelectorAll('.reveal');
+            revealElements.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+
+</html>
